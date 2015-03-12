@@ -1,8 +1,7 @@
-Requirements
-	`python 3.4  => sudo apt-get install python3.4`
+**Requirements**
+	python 3.4  => `sudo apt-get install python3.4`
 
 
-To run from the this dir
+To run lab assignments execute from this dir the following command:
 
-python3.4 -m lab<NUMBER> <args>
-
+`python3.4 -m lab<NUMBER> <args>`
