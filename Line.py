@@ -9,6 +9,17 @@ class Line(object):
     def delta(self):
         return self.p1.delta(self.p2)
 
+    def transform(self, transformer=None):
+        if not transformer:
+            return None
+
+        for trans in transformer.transformations:
+            trans(point=self.p1)()
+            trans(point=self.p2)()
+
+        self.p1.rasterize()
+        self.p2.rasterize()
+
     def draw_line(self, xpm, color_index):
         # Assume X/Y are decrementing with each step
         x_step = -1
