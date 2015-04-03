@@ -16,3 +16,9 @@ class Point(object):
     def rasterize(self):
         self.x = int(self.x)
         self.y = int(self.y)
+
+    def __str__(self):
+        return str(self.x) + " " + str(self.y)
+
+    def __repr__(self):
+        return str(self.x) + " " + str(self.y)

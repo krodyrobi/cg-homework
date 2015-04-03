@@ -14,7 +14,7 @@ class ClippingWindow(object):
         self.window_left = wl
         self.window_right = wr
 
-    def clip(self, line):
+    def clip_line(self, line):
         p1 = line.p1
         p2 = line.p2
 
@@ -56,6 +56,48 @@ class ClippingWindow(object):
                 code2 = self.__score_point(p2)
 
         return Line(p1, p2)
+
+    def clip_poly(self, point_list):
+        def inside(line, point):
+            dpx, dpy = line.p1.delta(point)
+            dqx, dqy = line.p2.delta(point)
+
+            return dpx * dqy > dpy * dqx
+
+        clip_points = self.__get_clip_window()
+        result = list(point_list)
+
+        clip_size = len(clip_points)
+        for c in range(clip_size):
+            poly_size = len(result)
+            input_points = list(result)
+            result = []
+
+            c1 = clip_points[c]
+            c2 = clip_points[(c + 1) % clip_size]
+            c_line = Line(c1, c2)
+
+            for p in range(poly_size):
+                p1 = input_points[p]
+                p2 = input_points[(p + 1) % poly_size]
+                p_line = Line(p1, p2)
+
+                if inside(c_line, p1):
+                    if inside(c_line, p2):  # case in -> in
+                        result.append(p2)
+                    else:                   # case in -> out
+                        result.append(c_line.intersect(p_line))
+                elif inside(c_line, p2):    # case out -> in
+                    result.append(c_line.intersect(p_line))
+                    result.append(p2)
+
+        return result
+
+    def __get_clip_window(self):
+        return [Point(self.window_left, self.window_top),
+                Point(self.window_left, self.window_bottom),
+                Point(self.window_right, self.window_bottom),
+                Point(self.window_right, self.window_top)]
 
     def __score_point(self, point):
         code = 0
