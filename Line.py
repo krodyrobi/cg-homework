@@ -6,6 +6,47 @@ class Line(object):
         self.p1 = p1
         self.p2 = p2
 
+    @staticmethod
+    def bezier_3(p1, p2, p3, p4, step=0.2):
+        """
+            Linear bezier P0 P1
+            B(t) = P0 + t*(P1 - P0) = (1-t)*P0 + t*P1
+
+            Quadric bezier P0 P1 P2
+            Bc(t) = (1-t)*B01(t) + t*B12(t) = (1-t)*((1-t)*P0 + t*P1) + t*((1-t)*P1 + t*P2)
+                                            = (1-t)^2 * P0 + (1-t)*t*P1 + t*(1-t)*P1 + t^2*P2
+                                            = (1-t)^2 * P0 + 2 * (1 - t) * t * P1 + t^2 * P2
+
+            Qubic bezier P0 P1 P2 P3
+            Bq(t) = (1-t) * Bc012(t) + t * Bc123(t) = (1-t)^3 * P0 + 3 * (1-t)^2 * t * P1 + 3(1-t) * t^2 * P2 + t^3*P3
+
+            And so on..
+        """
+
+        points = []
+
+        t = 0
+        while t < 1.:
+            t += step
+
+            # a, b, c, d are the coefficients of the 3rd degree bezier from the formula above
+            a = (1. - t)**3
+            b = 3. * t * (1. - t)**2
+            c = 3.0 * t**2 * (1.0 - t)
+            d = t**3
+
+            x = a * p1.x + b * p2.x + c * p3.x + d * p4.x
+            y = a * p1.y + b * p2.y + c * p3.y + d * p4.y
+
+            points.append(Point(x, y))
+
+        lines = []
+        for i in range(len(points) - 1):
+            lines.append(Line(points[i], points[i+1]))
+
+        return lines
+
+
     def delta(self):
         return self.p1.delta(self.p2)
 
@@ -86,3 +127,9 @@ class Line(object):
                     D -= dx_2
 
         xpm.set_pixel(point, color_index)
+
+    def __str__(self):
+        return 'Line( ' + str(self.p1) + ", " + str(self.p2) + ')'
+
+    def __repr__(self):
+        return 'Line( ' + str(self.p1) + ", " + str(self.p2) + ')'
